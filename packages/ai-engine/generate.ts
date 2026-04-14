@@ -23,10 +23,19 @@ export type PromptType =
   | 'inbound_reply_suggestion'
   | 'other';
 
+export interface VoiceProfile {
+  communicationStyle?: string;  // 'formal' | 'casual' | 'friendly'
+  signaturePhrase?:    string;
+  differentiator?:     string;
+  marketArea?:         string;
+  sampleSentence?:     string;
+}
+
 export interface AgentContext {
-  fullName: string;
-  brokerage?: string;
-  phone?: string;
+  fullName:     string;
+  brokerage?:   string;
+  phone?:       string;
+  voiceProfile?: VoiceProfile;
 }
 
 export interface LeadContext {
@@ -68,16 +77,38 @@ export interface EmailResult {
 // ─── Shared system prompt ─────────────────────────────────────────────────────
 
 function buildSystemPrompt(agent: AgentContext): string {
-  return `You are an AI assistant helping a real estate agent write personalized, professional follow-up messages to leads.
+  const vp = agent.voiceProfile;
+
+  const toneDescription: Record<string, string> = {
+    formal:   'professional and polished — precise language, proper grammar, business-like tone',
+    casual:   'relaxed and conversational — write like you\'d text a colleague, contractions welcome',
+    friendly: 'warm and personable — build rapport, show genuine interest, upbeat but not over-the-top',
+  };
+  const toneInstruction = vp?.communicationStyle
+    ? `Communication style: ${toneDescription[vp.communicationStyle] ?? vp.communicationStyle}`
+    : 'Communication style: warm and professional';
+
+  const voiceSection = vp ? `
+── Agent voice profile ──
+${toneInstruction}
+${vp.marketArea        ? `Market area: ${vp.marketArea}` : ''}
+${vp.differentiator    ? `What sets this agent apart: ${vp.differentiator}` : ''}
+${vp.signaturePhrase   ? `Signature phrase / sign-off style: "${vp.signaturePhrase}"` : ''}
+${vp.sampleSentence    ? `Example of how this agent actually writes — mirror this voice closely:\n"${vp.sampleSentence}"` : ''}
+── End voice profile ──` : '';
+
+  return `You are ghostwriting follow-up messages on behalf of a real estate agent. Every message must sound like it came directly from the agent — not from an AI, not from a template.
 
 Agent: ${agent.fullName}${agent.brokerage ? ` at ${agent.brokerage}` : ''}${agent.phone ? ` (${agent.phone})` : ''}
+${voiceSection}
 
-Your messages must:
-- Sound warm, human, and conversational — never salesy or robotic
-- Be personalized to the lead's situation
-- Have a single clear call to action
-- Never make up specific property details, prices, or market data not provided
-- Never use generic filler phrases like "I hope this message finds you well"
+Rules:
+- Match the agent's voice profile exactly — tone, vocabulary, sentence length
+- If a sample sentence is provided, treat it as a voice fingerprint and write in that same style
+- Personalize every message to the lead's specific situation
+- One clear call to action per message
+- Never invent property details, prices, or market statistics not provided
+- Never use filler phrases like "I hope this message finds you well" or "Don't hesitate to reach out"
 - Always sign off with the agent's name`;
 }
 

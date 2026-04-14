@@ -11,7 +11,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
 import { supabaseAdmin } from '../../packages/database/client';
 import { generateSMS, generateEmail } from '../../packages/ai-engine/generate';
-import type { AgentContext, LeadContext } from '../../packages/ai-engine/generate';
+import type { AgentContext, LeadContext, VoiceProfile } from '../../packages/ai-engine/generate';
 import { sendSMS } from '../../packages/delivery/sms';
 import {
   FOLLOW_UP_SEQUENCE,
@@ -28,6 +28,7 @@ interface AgentRow {
   phone:               string | null;
   brokerage:           string | null;
   twilio_phone_number: string | null;
+  voice_profile:       VoiceProfile | null;
 }
 
 interface LeadRow {
@@ -130,7 +131,7 @@ async function fetchDueLeads(): Promise<LeadRow[]> {
       sequence_day, sequence_paused, sequence_completed,
       agents!inner (
         id, full_name, phone, brokerage,
-        twilio_phone_number
+        twilio_phone_number, voice_profile
       )
     `)
     .lte('next_follow_up_at', now)
@@ -173,9 +174,10 @@ async function processLead(lead: LeadRow): Promise<ProcessResult> {
 
     // Build context objects
     const agentCtx: AgentContext = {
-      fullName: agent.full_name,
-      brokerage: agent.brokerage ?? undefined,
-      phone: agent.phone ?? undefined,
+      fullName:     agent.full_name,
+      brokerage:    agent.brokerage ?? undefined,
+      phone:        agent.phone ?? undefined,
+      voiceProfile: agent.voice_profile ?? undefined,
     };
 
     const daysSinceLastContact = lead.last_contacted_at

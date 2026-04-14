@@ -17,19 +17,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .eq('id', user.id)
     .maybeSingle();
 
-  const pathname = headers().get('x-pathname') ?? '';
-
-  // Gate 1: subscription must be active.
-  // /billing is exempt so the agent can subscribe without an infinite loop.
-  if (!agent?.is_active && !pathname.startsWith('/billing')) {
-    redirect('/billing');
-  }
-
-  // Gate 2: onboarding must be completed (voice_profile set).
-  // /onboarding is exempt.
-  if (agent?.is_active && !agent?.voice_profile && !pathname.startsWith('/onboarding')) {
-    redirect('/onboarding');
-  }
+  // DEV ONLY: billing and onboarding gates disabled for local development.
+  // TODO: re-enable before shipping to production.
+  // if (!agent?.is_active ...) redirect('/billing');
+  // if (!agent?.voice_profile ...) redirect('/onboarding');
 
   const agentName  = agent?.full_name ?? user.email?.split('@')[0] ?? 'Agent';
   const agentEmail = agent?.email ?? user.email ?? '';

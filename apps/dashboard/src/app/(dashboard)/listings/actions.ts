@@ -3,7 +3,10 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { createClient } from '@/lib/supabase/server';
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+// Guard against missing key — Anthropic constructor throws if apiKey is empty.
+const anthropic = process.env.ANTHROPIC_API_KEY
+  ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  : null;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -94,6 +97,8 @@ Return ONLY valid JSON with exactly these four keys — no markdown, no extra te
   "emailSubject": "...",
   "emailBody": "..."
 }`;
+
+    if (!anthropic) return { error: 'AI generation is not configured (missing ANTHROPIC_API_KEY)' };
 
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',

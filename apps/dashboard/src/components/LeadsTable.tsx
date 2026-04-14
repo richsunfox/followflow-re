@@ -41,13 +41,13 @@ function scoreBarColor(score: number): string {
   return 'bg-gray-300';
 }
 
-function initials(first: string, last: string): string {
-  return `${first[0] ?? ''}${last[0] ?? ''}`.toUpperCase();
+function initials(first: string | null, last: string | null): string {
+  return `${first?.[0] ?? ''}${last?.[0] ?? ''}`.toUpperCase();
 }
 
 function avatarColor(name: string): string {
   const colors = ['bg-indigo-500', 'bg-violet-500', 'bg-sky-500', 'bg-teal-500', 'bg-emerald-500', 'bg-amber-500'];
-  const idx = (name.charCodeAt(0) + name.charCodeAt(1)) % colors.length;
+  const idx = (name.charCodeAt(0) + (name.charCodeAt(1) || 0)) % colors.length;
   return colors[idx];
 }
 

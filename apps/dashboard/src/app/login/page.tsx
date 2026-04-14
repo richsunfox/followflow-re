@@ -1,15 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
 type Mode = 'signin' | 'reset';
 
 export default function LoginPage() {
-  const router = useRouter();
-  const supabase = createClient();
+  const router       = useRouter();
+  const searchParams = useSearchParams();
+  const supabase     = createClient();
 
   const [mode, setMode]         = useState<Mode>('signin');
   const [email, setEmail]       = useState('');
@@ -27,7 +28,8 @@ export default function LoginPage() {
       setError(error.message);
       setLoading(false);
     } else {
-      router.push('/leads');
+      const next = searchParams.get('next') ?? '/leads';
+      router.push(next);
       router.refresh();
     }
   }

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "dev:worker": "ts-node apps/worker/index.ts",
+    "start:worker": "ts-node apps/worker/scheduler.ts",
+    "dev:worker": "ts-node apps/worker/scheduler.ts",
     "dev:dashboard": "ts-node apps/dashboard/index.ts",
     "typecheck": "tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"

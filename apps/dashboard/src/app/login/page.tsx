@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
 type Mode = 'signin' | 'reset';
@@ -194,8 +195,11 @@ export default function LoginPage() {
           )}
         </div>
 
-        <p className="text-center text-gray-600 text-xs mt-6">
-          FollowFlow RE · AI-powered lead automation
+        <p className="text-center text-gray-500 text-sm mt-6">
+          Don&apos;t have an account?{' '}
+          <Link href="/signup" className="text-indigo-400 hover:text-indigo-300 transition-colors">
+            Create one
+          </Link>
         </p>
       </div>
     </div>

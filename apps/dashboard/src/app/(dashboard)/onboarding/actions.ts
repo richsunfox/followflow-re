@@ -68,5 +68,9 @@ export async function skipOnboarding(): Promise<SaveResult> {
 
   if (error) return { error: error.message };
 
+  // Provision a Twilio number even for skipped onboarding (no-op if already assigned)
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+  await provisionPhoneNumber(user.id, appUrl);
+
   redirect('/leads');
 }

@@ -36,18 +36,19 @@ export async function addLead(data: AddLeadData): Promise<AddLeadResult> {
   }
 
   const { error } = await supabase.from('leads').insert({
-    agent_id:   user.id,
-    first_name: data.firstName.trim(),
-    last_name:  data.lastName.trim(),
-    email:      data.email.trim()  || null,
-    phone:      data.phone.trim()  || null,
-    source:     data.source        || null,
-    lead_type:  data.leadType,
-    budget_min: budgetMin,
-    budget_max: budgetMax,
-    notes:      data.notes.trim()  || null,
-    status:     'new',
-    priority:   'medium',
+    agent_id:          user.id,
+    first_name:        data.firstName.trim(),
+    last_name:         data.lastName.trim(),
+    email:             data.email.trim()  || null,
+    phone:             data.phone.trim()  || null,
+    source:            data.source        || null,
+    lead_type:         data.leadType,
+    budget_min:        budgetMin,
+    budget_max:        budgetMax,
+    notes:             data.notes.trim()  || null,
+    status:            'new',
+    priority:          'medium',
+    next_follow_up_at: new Date().toISOString(), // triggers worker on next tick
   });
 
   if (error) return { error: error.message };

@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     const { data: agent } = await supabase
       .from('agents')
       .select('id, email, full_name')
-      .eq('phone', toPhone)
+      .eq('twilio_phone_number', toPhone)
       .maybeSingle();
 
     if (!agent) {

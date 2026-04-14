@@ -12,6 +12,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 import { supabaseAdmin } from '../../packages/database/client';
 import { generateSMS, generateEmail } from '../../packages/ai-engine/generate';
 import type { AgentContext, LeadContext } from '../../packages/ai-engine/generate';
+import { sendSMS } from '../../packages/delivery/sms';
 import {
   FOLLOW_UP_SEQUENCE,
   getSequenceState,
@@ -22,10 +23,11 @@ import {
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface AgentRow {
-  id: string;
-  full_name: string;
-  phone: string | null;
-  brokerage: string | null;
+  id:                  string;
+  full_name:           string;
+  phone:               string | null;
+  brokerage:           string | null;
+  twilio_phone_number: string | null;
 }
 
 interface LeadRow {
@@ -33,6 +35,7 @@ interface LeadRow {
   agent_id: string;
   first_name: string;
   last_name: string;
+  phone: string | null;
   lead_type: 'buyer' | 'seller' | 'both';
   status: string;
   source: string | null;
@@ -121,12 +124,13 @@ async function fetchDueLeads(): Promise<LeadRow[]> {
   const { data, error } = await supabaseAdmin
     .from('leads')
     .select(`
-      id, agent_id, first_name, last_name, lead_type, status,
+      id, agent_id, first_name, last_name, phone, lead_type, status,
       source, budget_min, budget_max, desired_location, desired_bedrooms,
       notes, last_contacted_at, next_follow_up_at, created_at,
       sequence_day, sequence_paused, sequence_completed,
       agents!inner (
-        id, full_name, phone, brokerage, is_active
+        id, full_name, phone, brokerage,
+        twilio_phone_number
       )
     `)
     .lte('next_follow_up_at', now)
@@ -218,8 +222,8 @@ async function processLead(lead: LeadRow): Promise<ProcessResult> {
       model          = result.model;
     }
 
-    // Insert message record (status = 'pending' — delivery layer will pick it up)
-    const { error: insertError } = await supabaseAdmin
+    // Insert message record
+    const { data: inserted, error: insertError } = await supabaseAdmin
       .from('messages')
       .insert({
         agent_id:     lead.agent_id,
@@ -229,9 +233,32 @@ async function processLead(lead: LeadRow): Promise<ProcessResult> {
         body:         messageBody,
         status:       'pending',
         ai_generated: true,
-      });
+      })
+      .select('id')
+      .single();
 
     if (insertError) throw new Error(`Failed to insert message: ${insertError.message}`);
+
+    // ── Send SMS via FollowFlow's shared Twilio account ───────────────────────
+    if (step.channel === 'sms' && inserted) {
+      const { twilio_phone_number } = agent;
+
+      if (!twilio_phone_number) {
+        log('warn', `Agent ${agent.full_name} has no assigned Twilio number — message saved as pending but not sent`);
+      } else if (!lead.phone) {
+        log('warn', `Lead ${leadName} has no phone number — message saved as pending but not sent`);
+        await supabaseAdmin
+          .from('messages')
+          .update({ status: 'failed', error_message: 'Lead has no phone number' })
+          .eq('id', inserted.id);
+      } else {
+        const sendResult = await sendSMS(lead.phone, messageBody, twilio_phone_number, inserted.id);
+        const statusUpdate = sendResult.status === 'sent'
+          ? { status: 'sent', provider_message_id: sendResult.twilioSid ?? null, sent_at: new Date().toISOString(), error_message: null }
+          : { status: 'failed', error_message: sendResult.error ?? 'Unknown error' };
+        await supabaseAdmin.from('messages').update(statusUpdate).eq('id', inserted.id);
+      }
+    }
 
     // Log AI usage
     const cost = calculateCost(inputTokens, outputTokens);

@@ -1,6 +1,7 @@
 // ─── SMS Delivery — Twilio ────────────────────────────────────────────────────
-// Picks up pending SMS messages from the messages table and sends them
-// via Twilio. Updates each row with the delivery status and Twilio SID.
+// Sends SMS messages via Twilio using FollowFlow RE's shared Twilio account.
+// TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN come from environment variables.
+// Each agent has their own dedicated fromNumber (twilio_phone_number column).
 
 import twilio from 'twilio';
 import * as dotenv from 'dotenv';
@@ -10,17 +11,14 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
 import { supabaseAdmin } from '../database/client';
 
-// ─── Env validation ───────────────────────────────────────────────────────────
+// ─── Twilio client (shared account) ──────────────────────────────────────────
 
-const accountSid    = process.env.TWILIO_ACCOUNT_SID;
-const authToken     = process.env.TWILIO_AUTH_TOKEN;
-const fromNumber    = process.env.TWILIO_PHONE_NUMBER;
-
-if (!accountSid)  throw new Error('Missing env: TWILIO_ACCOUNT_SID');
-if (!authToken)   throw new Error('Missing env: TWILIO_AUTH_TOKEN');
-if (!fromNumber)  throw new Error('Missing env: TWILIO_PHONE_NUMBER');
-
-const twilioClient = twilio(accountSid, authToken);
+function getClient() {
+  const sid   = process.env.TWILIO_ACCOUNT_SID;
+  const token = process.env.TWILIO_AUTH_TOKEN;
+  if (!sid || !token) throw new Error('TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN must be set in environment');
+  return twilio(sid, token);
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -31,67 +29,37 @@ interface PendingSMSRow {
   body: string;
   leads: {
     first_name: string;
-    last_name: string;
-    phone: string | null;
+    last_name:  string;
+    phone:      string | null;
   };
 }
 
-interface SMSSendResult {
-  messageId: string;
-  status: 'sent' | 'failed';
+export interface SMSSendResult {
+  messageId:  string;
+  status:     'sent' | 'failed';
   twilioSid?: string;
-  error?: string;
+  error?:     string;
 }
 
-// ─── Main export ──────────────────────────────────────────────────────────────
+// ─── Main exports ─────────────────────────────────────────────────────────────
 
 /**
- * Fetches all pending SMS messages from Supabase and sends them via Twilio.
- * Updates each row's status, provider_message_id, and sent_at on completion.
- *
- * Call this from the worker scheduler or a dedicated delivery cron.
- */
-export async function sendPendingSMSMessages(batchSize = 50): Promise<SMSSendResult[]> {
-  const pending = await fetchPendingSMS(batchSize);
-
-  if (pending.length === 0) {
-    log('info', 'No pending SMS messages');
-    return [];
-  }
-
-  log('info', `Sending ${pending.length} pending SMS message(s)`);
-
-  const results: SMSSendResult[] = [];
-
-  for (const message of pending) {
-    const result = await sendOne(message);
-    results.push(result);
-    await updateMessageStatus(result);
-    // Brief pause to stay well within Twilio rate limits (1 msg/sec per number)
-    await sleep(1100);
-  }
-
-  const sent   = results.filter(r => r.status === 'sent').length;
-  const failed = results.filter(r => r.status === 'failed').length;
-  log('info', `SMS delivery complete — ${sent} sent, ${failed} failed`);
-
-  return results;
-}
-
-/**
- * Sends a single SMS message immediately. Useful for real-time sends
- * (e.g., triggered by an agent from the dashboard).
+ * Sends a single SMS message immediately.
+ * fromNumber is the agent's dedicated Twilio number (from agents.twilio_phone_number).
  */
 export async function sendSMS(
-  to: string,
-  body: string,
-  messageId?: string,
+  to:          string,
+  body:        string,
+  fromNumber:  string,
+  messageId?:  string,
 ): Promise<SMSSendResult> {
-  const id = messageId ?? 'ad-hoc';
+  const id     = messageId ?? 'ad-hoc';
+  const client = getClient();
+
   try {
-    const msg = await twilioClient.messages.create({
-      to: normalizePhone(to),
-      from: fromNumber!,
+    const msg = await client.messages.create({
+      to:   normalizePhone(to),
+      from: fromNumber,
       body,
     });
 
@@ -104,9 +72,44 @@ export async function sendSMS(
   }
 }
 
+/**
+ * Fetches all pending SMS messages for one agent and sends them.
+ * Useful for retrying failed messages or as a manual delivery trigger.
+ */
+export async function sendPendingSMSMessages(
+  agentId:    string,
+  fromNumber: string,
+  batchSize = 50,
+): Promise<SMSSendResult[]> {
+  const pending = await fetchPendingSMS(agentId, batchSize);
+
+  if (pending.length === 0) {
+    log('info', `No pending SMS messages for agent ${agentId}`);
+    return [];
+  }
+
+  log('info', `Sending ${pending.length} pending SMS message(s) for agent ${agentId}`);
+
+  const results: SMSSendResult[] = [];
+
+  for (const message of pending) {
+    const result = await sendOneFromQueue(message, fromNumber);
+    results.push(result);
+    await updateMessageStatus(result);
+    // Brief pause — Twilio recommends ≤1 msg/sec per number
+    await sleep(1100);
+  }
+
+  const sent   = results.filter(r => r.status === 'sent').length;
+  const failed = results.filter(r => r.status === 'failed').length;
+  log('info', `SMS delivery complete — ${sent} sent, ${failed} failed`);
+
+  return results;
+}
+
 // ─── Internal helpers ─────────────────────────────────────────────────────────
 
-async function fetchPendingSMS(limit: number): Promise<PendingSMSRow[]> {
+async function fetchPendingSMS(agentId: string, limit: number): Promise<PendingSMSRow[]> {
   const { data, error } = await supabaseAdmin
     .from('messages')
     .select(`
@@ -115,6 +118,7 @@ async function fetchPendingSMS(limit: number): Promise<PendingSMSRow[]> {
     `)
     .eq('status', 'pending')
     .eq('channel', 'sms')
+    .eq('agent_id', agentId)
     .order('created_at', { ascending: true })
     .limit(limit);
 
@@ -122,7 +126,10 @@ async function fetchPendingSMS(limit: number): Promise<PendingSMSRow[]> {
   return (data ?? []) as unknown as PendingSMSRow[];
 }
 
-async function sendOne(message: PendingSMSRow): Promise<SMSSendResult> {
+async function sendOneFromQueue(
+  message:    PendingSMSRow,
+  fromNumber: string,
+): Promise<SMSSendResult> {
   const { id, leads } = message;
 
   if (!leads?.phone) {
@@ -130,20 +137,20 @@ async function sendOne(message: PendingSMSRow): Promise<SMSSendResult> {
     return { messageId: id, status: 'failed', error: 'Lead has no phone number' };
   }
 
-  return sendSMS(leads.phone, message.body, id);
+  return sendSMS(leads.phone, message.body, fromNumber, id);
 }
 
 async function updateMessageStatus(result: SMSSendResult): Promise<void> {
   const update =
     result.status === 'sent'
       ? {
-          status: 'sent' as const,
+          status:              'sent' as const,
           provider_message_id: result.twilioSid ?? null,
-          sent_at: new Date().toISOString(),
-          error_message: null,
+          sent_at:             new Date().toISOString(),
+          error_message:       null,
         }
       : {
-          status: 'failed' as const,
+          status:        'failed' as const,
           error_message: result.error ?? 'Unknown error',
         };
 
@@ -158,11 +165,10 @@ async function updateMessageStatus(result: SMSSendResult): Promise<void> {
 }
 
 function normalizePhone(phone: string): string {
-  // Ensure E.164 format (+1XXXXXXXXXX for US numbers)
   const digits = phone.replace(/\D/g, '');
   if (digits.length === 10) return `+1${digits}`;
   if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
-  return phone; // pass through if already formatted or international
+  return phone;
 }
 
 function extractError(err: unknown): string {

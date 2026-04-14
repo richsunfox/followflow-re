@@ -2,13 +2,14 @@
 
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { provisionPhoneNumber } from '@/lib/twilio/provision';
 
 export interface VoiceProfileAnswers {
   communicationStyle: string;  // 'formal' | 'casual' | 'friendly'
-  signaturePhrase:    string;  // a word/phrase they use often
-  differentiator:     string;  // what sets them apart
-  marketArea:         string;  // their primary market area
-  sampleSentence:     string;  // a real message they'd send a lead
+  signaturePhrase:    string;
+  differentiator:     string;
+  marketArea:         string;
+  sampleSentence:     string;
 }
 
 export interface SaveResult {
@@ -34,6 +35,11 @@ export async function saveVoiceProfile(
     .eq('id', user.id);
 
   if (error) return { error: error.message };
+
+  // Provision a dedicated Twilio number for this agent (no-op if already assigned)
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+  await provisionPhoneNumber(user.id, appUrl);
+  // Non-fatal: if provisioning fails the agent still gets in, admin can retry later
 
   redirect('/leads');
 }

@@ -111,7 +111,7 @@ export default function ResponseTimeWidget({ stats }: { stats: ResponseTimeStats
 
       {/* Nudge */}
       <p className="mt-4 text-xs text-indigo-500 leading-relaxed">
-        Leads contacted within 5 minutes are <strong>9× more likely to convert</strong>. FollowFlow fires the first message automatically.
+        Leads contacted within 5 minutes are <strong>9× more likely to convert</strong>. Always On fires the first message automatically.
       </p>
     </div>
   );

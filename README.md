@@ -1,4 +1,4 @@
-# FollowFlow RE
+# Always On — The Follow Through System
 
 AI-powered lead follow-up automation for solo California real estate agents. Sends personalized SMS and email follow-ups in the agent's own voice, automatically, across a 14-day sequence. Includes a listing description writer, inbound reply handling, response-time analytics, and a full lead pipeline dashboard.
 
@@ -168,7 +168,7 @@ Both `.env.local` files must be populated. The root `.env.local` is used by the 
 | `ANTHROPIC_API_KEY` | Yes | console.anthropic.com → API Keys |
 | `STRIPE_SECRET_KEY` | Yes | Stripe dashboard → Developers → API keys → Secret key (`sk_test_…` or `sk_live_…`) |
 | `STRIPE_WEBHOOK_SECRET` | Yes | Stripe dashboard → Developers → Webhooks → your endpoint → Signing secret (`whsec_…`) |
-| `STRIPE_PRICE_ID` | Yes | Stripe dashboard → Products → FollowFlow RE → price ID (`price_…`) |
+| `STRIPE_PRICE_ID` | Yes | Stripe dashboard → Products → Always On → price ID (`price_…`) |
 | `NEXT_PUBLIC_APP_URL` | Yes | `http://localhost:3000` locally; your production domain in prod |
 | `TWILIO_AUTH_TOKEN` | Yes | Twilio Console → Account Info → Auth Token |
 | `TWILIO_PHONE_NUMBER` | Yes | Twilio Console → Phone Numbers → your number (E.164 format: `+15551234567`) |

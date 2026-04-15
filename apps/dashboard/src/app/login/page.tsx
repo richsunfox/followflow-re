@@ -57,24 +57,25 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#0F1629] flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
 
         {/* Brand */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-600 rounded-xl mb-4">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-[#3B7BFF] rounded-xl mb-4">
             <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-white">FollowFlow RE</h1>
+          <h1 className="text-2xl font-bold text-white">Always On</h1>
+          <p className="text-indigo-400 text-xs font-semibold uppercase tracking-widest mt-1 mb-1">The Follow Through System</p>
           <p className="text-gray-400 text-sm mt-1">
             {mode === 'signin' ? 'Sign in to your agent portal' : 'Reset your password'}
           </p>
         </div>
 
         {/* Form card */}
-        <div className="bg-gray-900 rounded-2xl border border-gray-800 p-8">
+        <div className="bg-[#0D1525] rounded-2xl border border-white/[0.08] p-8">
           {mode === 'signin' ? (
             <form onSubmit={handleSignIn} className="space-y-5">
               <div>
@@ -86,7 +87,7 @@ export default function LoginPage() {
                   required
                   autoComplete="email"
                   placeholder="you@brokerage.com"
-                  className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                  className="w-full px-3.5 py-2.5 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B7BFF] focus:border-transparent transition"
                 />
               </div>
 
@@ -96,7 +97,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => switchMode('reset')}
-                    className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                    className="text-xs text-[#3B7BFF] hover:text-blue-300 transition-colors"
                   >
                     Forgot password?
                   </button>
@@ -108,7 +109,7 @@ export default function LoginPage() {
                   required
                   autoComplete="current-password"
                   placeholder="••••••••"
-                  className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                  className="w-full px-3.5 py-2.5 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B7BFF] focus:border-transparent transition"
                 />
               </div>
 
@@ -124,7 +125,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800 disabled:cursor-not-allowed text-white font-medium text-sm rounded-lg transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                className="w-full py-2.5 px-4 bg-[#3B7BFF] hover:bg-[#2E6AEE] disabled:bg-[#3B7BFF]/40 disabled:cursor-not-allowed text-white font-medium text-sm rounded-lg transition focus:outline-none focus:ring-2 focus:ring-[#3B7BFF] focus:ring-offset-2 focus:ring-offset-[#0D1525]"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -148,7 +149,7 @@ export default function LoginPage() {
                   required
                   autoComplete="email"
                   placeholder="you@brokerage.com"
-                  className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                  className="w-full px-3.5 py-2.5 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B7BFF] focus:border-transparent transition"
                 />
               </div>
 
@@ -173,7 +174,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800 disabled:cursor-not-allowed text-white font-medium text-sm rounded-lg transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                className="w-full py-2.5 px-4 bg-[#3B7BFF] hover:bg-[#2E6AEE] disabled:bg-[#3B7BFF]/40 disabled:cursor-not-allowed text-white font-medium text-sm rounded-lg transition focus:outline-none focus:ring-2 focus:ring-[#3B7BFF] focus:ring-offset-2 focus:ring-offset-[#0D1525]"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -199,7 +200,7 @@ export default function LoginPage() {
 
         <p className="text-center text-gray-500 text-sm mt-6">
           Don&apos;t have an account?{' '}
-          <Link href="/signup" className="text-indigo-400 hover:text-indigo-300 transition-colors">
+          <Link href="/signup" className="text-[#3B7BFF] hover:text-blue-300 transition-colors">
             Create one
           </Link>
         </p>

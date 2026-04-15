@@ -119,7 +119,7 @@ async function notifyAgent(p: NotifyParams): Promise<void> {
   const html = `
     <div style="font-family:sans-serif;max-width:520px;margin:0 auto;color:#1f2937">
       <div style="background:#4f46e5;padding:20px 24px;border-radius:12px 12px 0 0">
-        <p style="margin:0;color:#fff;font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase">FollowFlow RE</p>
+        <p style="margin:0;color:#fff;font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase">Always On</p>
       </div>
       <div style="background:#fff;padding:28px 24px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px">
         <h2 style="margin:0 0 8px;font-size:18px;font-weight:700;color:#111827">
@@ -148,7 +148,7 @@ async function notifyAgent(p: NotifyParams): Promise<void> {
     },
     body: JSON.stringify({
       personalizations: [{ to: [{ email: p.agentEmail, name: p.agentName }] }],
-      from:    { email: process.env.SENDGRID_FROM_EMAIL ?? p.agentEmail, name: 'FollowFlow RE' },
+      from:    { email: process.env.SENDGRID_FROM_EMAIL ?? p.agentEmail, name: 'Always On' },
       subject: `${p.leadName} just replied to your follow-up`,
       content: [{ type: 'text/html', value: html }],
     }),

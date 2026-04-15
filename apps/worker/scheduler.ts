@@ -241,7 +241,7 @@ async function processLead(lead: LeadRow): Promise<ProcessResult> {
 
     if (insertError) throw new Error(`Failed to insert message: ${insertError.message}`);
 
-    // ── Send SMS via FollowFlow's shared Twilio account ───────────────────────
+    // ── Send SMS via Always On's shared Twilio account ────────────────────────
     if (step.channel === 'sms' && inserted) {
       const { twilio_phone_number } = agent;
 
@@ -391,7 +391,7 @@ function sleep(ms: number): Promise<void> {
 // ─── Cron schedule ────────────────────────────────────────────────────────────
 
 export function startScheduler(): void {
-  log('info', 'FollowFlow RE worker starting...');
+  log('info', 'Always On worker starting...');
 
   // Run immediately on start to catch any leads that became due while the worker was down
   processFollowUps();

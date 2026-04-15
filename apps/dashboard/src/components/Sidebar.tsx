@@ -84,8 +84,8 @@ export default function Sidebar({ agentName, agentEmail }: SidebarProps) {
             </svg>
           </div>
           <div className="min-w-0">
-            <div className="text-white font-semibold text-sm leading-tight">FollowFlow RE</div>
-            <div className="text-gray-500 text-xs">Agent Portal</div>
+            <div className="text-white font-semibold text-sm leading-tight">Always On</div>
+            <div className="text-gray-500 text-xs">The Follow Through System</div>
           </div>
         </div>
       </div>

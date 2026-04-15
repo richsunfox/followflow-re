@@ -37,9 +37,9 @@ export default function SignUpPage() {
 
   if (needsEmail) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0F1629] flex items-center justify-center px-4">
         <div className="w-full max-w-sm text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-600 rounded-xl mb-6">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-[#3B7BFF] rounded-xl mb-6">
             <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
             </svg>
@@ -51,7 +51,7 @@ export default function SignUpPage() {
           </p>
           <Link
             href="/login"
-            className="inline-block mt-6 text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
+            className="inline-block mt-6 text-sm text-[#3B7BFF] hover:text-blue-300 transition-colors"
           >
             Back to sign in
           </Link>
@@ -61,12 +61,12 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#0F1629] flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
 
         {/* Brand */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-600 rounded-xl mb-4">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-[#3B7BFF] rounded-xl mb-4">
             <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
             </svg>
@@ -76,7 +76,7 @@ export default function SignUpPage() {
         </div>
 
         {/* Form card */}
-        <div className="bg-gray-900 rounded-2xl border border-gray-800 p-8">
+        <div className="bg-[#0D1525] rounded-2xl border border-white/[0.08] p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
 
             <div>
@@ -88,7 +88,7 @@ export default function SignUpPage() {
                 required
                 autoComplete="name"
                 placeholder="Jane Smith"
-                className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                className="w-full px-3.5 py-2.5 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B7BFF] focus:border-transparent transition"
               />
             </div>
 
@@ -101,7 +101,7 @@ export default function SignUpPage() {
                 required
                 autoComplete="email"
                 placeholder="jane@brokerage.com"
-                className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                className="w-full px-3.5 py-2.5 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B7BFF] focus:border-transparent transition"
               />
             </div>
 
@@ -115,7 +115,7 @@ export default function SignUpPage() {
                 onChange={e => setBrokerage(e.target.value)}
                 autoComplete="organization"
                 placeholder="Keller Williams, Compass, etc."
-                className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                className="w-full px-3.5 py-2.5 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B7BFF] focus:border-transparent transition"
               />
             </div>
 
@@ -128,7 +128,7 @@ export default function SignUpPage() {
                 required
                 autoComplete="new-password"
                 placeholder="At least 8 characters"
-                className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                className="w-full px-3.5 py-2.5 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B7BFF] focus:border-transparent transition"
               />
             </div>
 
@@ -141,7 +141,7 @@ export default function SignUpPage() {
                 required
                 autoComplete="new-password"
                 placeholder="••••••••"
-                className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                className="w-full px-3.5 py-2.5 bg-white/[0.05] border border-white/[0.1] rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B7BFF] focus:border-transparent transition"
               />
             </div>
 
@@ -157,7 +157,7 @@ export default function SignUpPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800 disabled:cursor-not-allowed text-white font-medium text-sm rounded-lg transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+              className="w-full py-2.5 px-4 bg-[#3B7BFF] hover:bg-[#2E6AEE] disabled:bg-[#3B7BFF]/40 disabled:cursor-not-allowed text-white font-medium text-sm rounded-lg transition focus:outline-none focus:ring-2 focus:ring-[#3B7BFF] focus:ring-offset-2 focus:ring-offset-gray-900"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -174,7 +174,7 @@ export default function SignUpPage() {
 
         <p className="text-center text-gray-500 text-sm mt-6">
           Already have an account?{' '}
-          <Link href="/login" className="text-indigo-400 hover:text-indigo-300 transition-colors">
+          <Link href="/login" className="text-[#3B7BFF] hover:text-blue-300 transition-colors">
             Sign in
           </Link>
         </p>

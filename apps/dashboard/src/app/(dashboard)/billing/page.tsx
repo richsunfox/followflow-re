@@ -36,14 +36,14 @@ export default function BillingPage() {
         <div className="bg-white rounded-2xl shadow-sm ring-1 ring-gray-200 p-8 text-center">
           <h1 className="text-xl font-bold text-gray-900 mb-2">Your account is not active</h1>
           <p className="text-gray-500 text-sm mb-8 leading-relaxed">
-            An active subscription is required to use FollowFlow RE.
+            An active subscription is required to use Always On.
             Subscribe below to unlock your dashboard, AI follow-up sequences, and listing writer.
           </p>
 
           {/* Plan summary */}
           <div className="bg-gray-50 rounded-xl border border-gray-100 p-5 mb-6 text-left">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest">FollowFlow RE</span>
+              <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest">Always On</span>
               <span className="text-2xl font-black text-gray-900">$149<span className="text-sm font-normal text-gray-400">/mo</span></span>
             </div>
             <ul className="space-y-2">

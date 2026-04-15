@@ -1,5 +1,5 @@
 -- ============================================================
--- FollowFlow RE — Supabase Database Schema
+-- Always On — Supabase Database Schema
 -- ============================================================
 
 -- Enable UUID extension

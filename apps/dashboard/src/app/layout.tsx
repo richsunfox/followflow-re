@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'FollowFlow RE',
+  title: 'Always On — The Follow Through System',
   description: 'AI-powered lead follow-up for real estate agents',
 };
 

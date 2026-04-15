@@ -118,7 +118,7 @@ export default async function SettingsPage() {
           </div>
           <div className="px-6 py-5 flex items-center justify-between">
             <div>
-              <p className="text-sm font-semibold text-gray-900">FollowFlow RE</p>
+              <p className="text-sm font-semibold text-gray-900">Always On</p>
               <p className="text-xs text-gray-500 mt-0.5">$149 / month · Month-to-month</p>
             </div>
             <span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${

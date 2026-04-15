@@ -126,7 +126,7 @@ export async function handleTwilioInbound(
 
 export interface SendGridInboundPayload {
   from:     string;    // e.g. "Jane Doe <jane@example.com>"
-  to:       string;    // e.g. "agent@followflowre.com"
+  to:       string;    // e.g. "agent@alwayson.ai"
   subject?: string;
   text?:    string;    // plain text body
   html?:    string;    // HTML body (fallback)

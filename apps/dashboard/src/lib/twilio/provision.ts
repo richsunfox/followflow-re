@@ -31,7 +31,7 @@ export interface ProvisionResult {
  * Safe to call multiple times — skips if the agent already has a number.
  *
  * @param agentId   - The agent's UUID (must match agents.id)
- * @param appUrl    - Base URL of the deployed app, e.g. https://app.followflowre.com
+ * @param appUrl    - Base URL of the deployed app, e.g. https://app.alwayson.ai
  */
 export async function provisionPhoneNumber(
   agentId: string,

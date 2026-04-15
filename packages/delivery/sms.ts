@@ -1,5 +1,5 @@
 // ─── SMS Delivery — Twilio ────────────────────────────────────────────────────
-// Sends SMS messages via Twilio using FollowFlow RE's shared Twilio account.
+// Sends SMS messages via Twilio using Always On's shared Twilio account.
 // TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN come from environment variables.
 // Each agent has their own dedicated fromNumber (twilio_phone_number column).
 

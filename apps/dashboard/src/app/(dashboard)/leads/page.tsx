@@ -125,29 +125,29 @@ export default async function LeadsPage() {
 
   return (
     <div className="p-8">
-      {/* Header */}
+      {/* ── Page header ─────────────────────────────────────────────────── */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Leads</h1>
-            <p className="text-gray-500 text-sm mt-1">
+            <h1 className="text-2xl font-bold text-[#0F1629]">Leads</h1>
+            <p className="text-slate-500 text-sm mt-1">
               {all.length} total lead{all.length !== 1 ? 's' : ''} in your pipeline
             </p>
           </div>
           <AddLeadModal />
         </div>
 
-        {/* Response time widget — primary value proof */}
+        {/* Response time widget */}
         <div className="mt-6">
           <ResponseTimeWidget stats={stats} />
         </div>
 
         {/* Stat cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
-          <StatCard label="Hot leads"    value={hot}       color="text-red-600"    bg="bg-red-50"    border="border-red-100" />
-          <StatCard label="Warm leads"   value={warm}      color="text-orange-600" bg="bg-orange-50" border="border-orange-100" />
-          <StatCard label="Nurturing"    value={nurturing} color="text-blue-600"   bg="bg-blue-50"   border="border-blue-100" />
-          <StatCard label="Overdue"      value={overdue}   color="text-rose-600"   bg="bg-rose-50"   border="border-rose-100" />
+          <StatCard label="Hot leads"  value={hot}       accent="#EF4444" />
+          <StatCard label="Warm leads" value={warm}      accent="#F59E0B" />
+          <StatCard label="Nurturing"  value={nurturing} accent="#3B7BFF" />
+          <StatCard label="Overdue"    value={overdue}   accent="#EF4444" urgent />
         </div>
       </div>
 
@@ -158,14 +158,19 @@ export default async function LeadsPage() {
 }
 
 function StatCard({
-  label, value, color, bg, border,
+  label, value, accent, urgent = false,
 }: {
-  label: string; value: number; color: string; bg: string; border: string;
+  label: string; value: number; accent: string; urgent?: boolean;
 }) {
   return (
-    <div className={`${bg} ${border} border rounded-xl px-4 py-4`}>
-      <div className={`text-2xl font-bold tabular-nums ${color}`}>{value}</div>
-      <div className="text-xs text-gray-500 mt-0.5">{label}</div>
+    <div className="bg-white border border-[#E2E8F0] rounded-xl px-4 py-4 shadow-sm">
+      <div
+        className="text-2xl font-bold tabular-nums leading-none"
+        style={{ color: accent }}
+      >
+        {value}
+      </div>
+      <div className="text-xs text-slate-500 font-medium mt-1.5">{label}</div>
     </div>
   );
 }

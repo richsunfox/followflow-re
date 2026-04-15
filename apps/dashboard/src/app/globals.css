@@ -2,45 +2,99 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Design tokens ─────────────────────────────────────────────────────────── */
+:root {
+  --color-bg-primary:   #0F1629;
+  --color-bg-surface:   #1A2540;
+  --color-bg-light:     #F7F8FC;
+  --color-accent:       #3B7BFF;
+  --color-accent-hover: #2E6AEE;
+  --color-accent-warm:  #C9A84C;
+  --color-border:       #1E2D4A;
+  --color-text-muted:   #8B9BB4;
+  --color-success:      #22C55E;
+  --color-warning:      #F59E0B;
+  --color-error:        #EF4444;
+}
+
+/* ── Base resets ───────────────────────────────────────────────────────────── */
 @layer base {
   * {
     box-sizing: border-box;
   }
 
   html {
-    -webkit-font-smoothing: antialiased;
+    -webkit-font-smoothing:  antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-size: 16px;
+    line-height: 1.65;
+    /* Enforce minimum readable size at the base */
+    min-font-size: 14px;
+  }
+
+  /* Minimum 14px on all text nodes */
+  *, *::before, *::after {
+    font-size: max(14px, inherit);
+  }
+
+  /* Headings default to font-weight 700 */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.2;
   }
 }
 
+/* ── Utility helpers ───────────────────────────────────────────────────────── */
 @layer utilities {
+  /* Consistent section vertical rhythm */
+  .section-y   { @apply py-20; }
+  .section-y-sm { @apply py-12; }
+
+  /* Standard card padding (24px) */
+  .card-pad { @apply p-6; }
+
+  /* Thin scrollbar for dark surfaces */
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: #374151 transparent;
+    scrollbar-color: #1E2D4A transparent;
   }
+  .scrollbar-thin::-webkit-scrollbar       { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: #1E2D4A; border-radius: 3px; }
 }
 
+/* ── Animations ────────────────────────────────────────────────────────────── */
+
+/* Slide in from right (drawer / detail modal) */
 @keyframes fadeSlide {
-  from {
-    opacity: 0;
-    transform: translateX(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(14px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
+.animate-fade-slide { animation: fadeSlide 0.22s ease-out both; }
 
-.animate-fade-slide {
-  animation: fadeSlide 0.22s ease-out both;
-}
-
+/* Top navigation progress bar */
 @keyframes navProgress {
   0%   { width: 0%;   opacity: 1; }
   80%  { width: 85%;  opacity: 1; }
   100% { width: 100%; opacity: 0; }
 }
+.animate-nav-progress { animation: navProgress 1.8s ease-out forwards; }
 
-.animate-nav-progress {
-  animation: navProgress 1.8s ease-out forwards;
+/* Modal entry — scale + fade */
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1.00); }
 }
+.animate-modal-in { animation: modalIn 200ms ease-out both; }
+
+/* Subtle fade for backdrop */
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.animate-backdrop-in { animation: backdropIn 150ms ease-out both; }

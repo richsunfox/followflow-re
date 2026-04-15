@@ -1,5 +1,4 @@
 import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 import Sidebar from '@/components/Sidebar';
 import NavigationProgress from '@/components/NavigationProgress';
@@ -10,15 +9,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!user) redirect('/login');
 
-  // Fetch agent profile
   const { data: agent } = await supabase
     .from('agents')
     .select('full_name, email, voice_profile, is_active')
     .eq('id', user.id)
     .maybeSingle();
 
-  // DEV ONLY: billing and onboarding gates disabled for local development.
-  // TODO: re-enable before shipping to production.
+  // TODO: re-enable billing / onboarding gates before charging agents.
   // if (!agent?.is_active ...) redirect('/billing');
   // if (!agent?.voice_profile ...) redirect('/onboarding');
 
@@ -26,7 +23,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const agentEmail = agent?.email ?? user.email ?? '';
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-ao-light">
       <NavigationProgress />
       <Sidebar agentName={agentName} agentEmail={agentEmail} />
       <main className="flex-1 overflow-y-auto">

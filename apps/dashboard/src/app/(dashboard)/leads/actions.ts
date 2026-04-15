@@ -4,15 +4,17 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 
 export interface AddLeadData {
-  firstName:  string;
-  lastName:   string;
-  email:      string;
-  phone:      string;
-  source:     string;
-  leadType:   'buyer' | 'seller' | 'both';
-  budgetMin:  string;
-  budgetMax:  string;
-  notes:      string;
+  firstName:       string;
+  lastName:        string;
+  email:           string;
+  phone:           string;
+  source:          string;
+  leadType:        'buyer' | 'seller' | 'both';
+  budgetMin:       string;
+  budgetMax:       string;
+  desiredLocation: string;
+  desiredBedrooms: string;
+  notes:           string;
 }
 
 export interface AddLeadResult {
@@ -35,6 +37,11 @@ export async function addLead(data: AddLeadData): Promise<AddLeadResult> {
     return { error: 'Budget min cannot exceed budget max' };
   }
 
+  const desiredBedrooms = data.desiredBedrooms ? Number(data.desiredBedrooms) : null;
+  if (desiredBedrooms !== null && (isNaN(desiredBedrooms) || desiredBedrooms < 0)) {
+    return { error: 'Bedrooms must be a positive number' };
+  }
+
   const { error } = await supabase.from('leads').insert({
     agent_id:          user.id,
     first_name:        data.firstName.trim(),
@@ -45,6 +52,8 @@ export async function addLead(data: AddLeadData): Promise<AddLeadResult> {
     lead_type:         data.leadType,
     budget_min:        budgetMin,
     budget_max:        budgetMax,
+    desired_location:  data.desiredLocation.trim() || null,
+    desired_bedrooms:  desiredBedrooms,
     notes:             data.notes.trim()  || null,
     status:            'new',
     priority:          'medium',

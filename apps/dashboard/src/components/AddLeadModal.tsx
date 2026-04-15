@@ -24,7 +24,8 @@ const LEAD_TYPES = [
 
 const EMPTY: AddLeadData = {
   firstName: '', lastName: '', email: '', phone: '',
-  source: '', leadType: 'buyer', budgetMin: '', budgetMax: '', notes: '',
+  source: '', leadType: 'buyer', budgetMin: '', budgetMax: '',
+  desiredLocation: '', desiredBedrooms: '', notes: '',
 };
 
 export default function AddLeadModal() {
@@ -245,6 +246,38 @@ export default function AddLeadModal() {
                         value={form.budgetMax}
                         onChange={e => set('budgetMax', e.target.value)}
                         min={0}
+                        disabled={loading}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Desired location — shown for all lead types */}
+                <div>
+                  <label className={labelCls}>Desired location</label>
+                  <input
+                    type="text"
+                    className={inputCls}
+                    placeholder="Pasadena, Arcadia, San Marino…"
+                    value={form.desiredLocation}
+                    onChange={e => set('desiredLocation', e.target.value)}
+                    disabled={loading}
+                  />
+                </div>
+
+                {/* Desired bedrooms — buyers and both only */}
+                {(form.leadType === 'buyer' || form.leadType === 'both') && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className={labelCls}>Desired bedrooms</label>
+                      <input
+                        type="number"
+                        className={inputCls}
+                        placeholder="3"
+                        value={form.desiredBedrooms}
+                        onChange={e => set('desiredBedrooms', e.target.value)}
+                        min={0}
+                        max={20}
                         disabled={loading}
                       />
                     </div>

@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
+import AccountForm from './AccountForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,7 +16,7 @@ export default async function SettingsPage() {
 
   const { data: agent } = await supabase
     .from('agents')
-    .select('full_name, email, voice_profile, subscription_status, is_active, onboarding_completed')
+    .select('full_name, email, phone, brokerage, voice_profile, subscription_status, is_active, onboarding_completed')
     .eq('id', user!.id)
     .maybeSingle();
 
@@ -32,21 +33,12 @@ export default async function SettingsPage() {
       <div className="space-y-6">
 
         {/* ── Account ── */}
-        <section className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
-            <h2 className="text-sm font-semibold text-gray-700">Account</h2>
-          </div>
-          <div className="px-6 py-5 space-y-4">
-            <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Name</p>
-              <p className="text-sm text-gray-900">{agent?.full_name ?? '—'}</p>
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Email</p>
-              <p className="text-sm text-gray-900">{agent?.email ?? user?.email ?? '—'}</p>
-            </div>
-          </div>
-        </section>
+        <AccountForm
+          fullName={agent?.full_name ?? ''}
+          email={agent?.email ?? user?.email ?? ''}
+          brokerage={agent?.brokerage ?? ''}
+          phone={agent?.phone ?? ''}
+        />
 
         {/* ── AI Voice Profile ── */}
         <section className="bg-white rounded-xl border border-gray-200 overflow-hidden">

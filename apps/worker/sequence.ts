@@ -43,16 +43,17 @@ export interface LeadForSequence {
 
 // ─── Sequence Definition ──────────────────────────────────────────────────────
 //
-// 14-day, 7-step sequence for a new California real estate lead.
-// Mix of SMS (quick, casual) and email (more substance).
+// 14-day, 7-step sequence for a new real estate lead.
+// GOAL: get the lead to respond so the agent can get them on the phone.
+// The sequence stops automatically the moment the lead replies.
 //
-//  Day  0  → SMS   : First touch — acknowledge how they reached out, open a door
-//  Day  1  → Email : Intro email — who you are, what you offer, no pressure CTA
-//  Day  3  → SMS   : Second text — ask a simple question to invite a reply
-//  Day  5  → Email : Value-add — market insight, relevant listing, or helpful tip
-//  Day  7  → SMS   : Third text — different angle, lighter tone
-//  Day 10  → Email : Alternate angle — address a common hesitation or objection
-//  Day 14  → Email : Breakup — final check-in, close the loop gracefully
+//  Day  0  → SMS   : Touch 1 — instant, warm, specific to what they were looking at
+//  Day  1  → Email : Touch 2 — intro the agent, offer value, CTA: 10-min call
+//  Day  2  → SMS   : Touch 3 — different angle, conversational, low pressure
+//  Day  4  → Email : Touch 4 — market insight relevant to their area, CTA: call
+//  Day  7  → SMS   : Touch 5 — new hook, light urgency ("a few homes just moved")
+//  Day 10  → Email : Touch 6 — social proof / credibility, soft call invitation
+//  Day 14  → SMS   : Touch 7 — breakup message, leave the door open gracefully
 
 export const FOLLOW_UP_SEQUENCE: SequenceStep[] = [
   {
@@ -76,20 +77,20 @@ export const FOLLOW_UP_SEQUENCE: SequenceStep[] = [
   {
     stepNumber: 3,
     tag: 'second_touch',
-    dayOffset: 3,
+    dayOffset: 2,
     channel: 'sms',
     promptType: 'lead_follow_up',
     isBreakup: false,
-    description: 'Day 3 — Second touch SMS',
+    description: 'Day 2 — Second touch SMS',
   },
   {
     stepNumber: 4,
     tag: 'value_add',
-    dayOffset: 5,
+    dayOffset: 4,
     channel: 'email',
     promptType: 'email_draft',
     isBreakup: false,
-    description: 'Day 5 — Value-add email',
+    description: 'Day 4 — Market insight email',
   },
   {
     stepNumber: 5,
@@ -107,16 +108,16 @@ export const FOLLOW_UP_SEQUENCE: SequenceStep[] = [
     channel: 'email',
     promptType: 'email_draft',
     isBreakup: false,
-    description: 'Day 10 — Alternate angle email',
+    description: 'Day 10 — Social proof email',
   },
   {
     stepNumber: 7,
     tag: 'breakup',
     dayOffset: 14,
-    channel: 'email',
+    channel: 'sms',
     promptType: 'lead_follow_up',
     isBreakup: true,
-    description: 'Day 14 — Breakup message (final)',
+    description: 'Day 14 — Breakup SMS (final)',
   },
 ];
 

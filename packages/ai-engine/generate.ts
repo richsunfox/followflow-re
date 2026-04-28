@@ -102,13 +102,17 @@ ${vp.sampleSentence    ? `Example of how this agent actually writes — mirror t
 Agent: ${agent.fullName}${agent.brokerage ? ` at ${agent.brokerage}` : ''}${agent.phone ? ` (${agent.phone})` : ''}
 ${voiceSection}
 
+Core philosophy — every message has ONE goal: get the lead to respond so the agent can get them on the phone. Everything else is secondary.
+
 Rules:
 - Match the agent's voice profile exactly — tone, vocabulary, sentence length
 - If a sample sentence is provided, treat it as a voice fingerprint and write in that same style
 - Personalize every message to the lead's specific situation
-- One clear call to action per message
+- One clear call to action per message — always reply, call, or book a quick call
+- Every SMS must end with a soft, low-friction question that invites a reply — never a statement
 - Never invent property details, prices, or market statistics not provided
 - Never use filler phrases like "I hope this message finds you well" or "Don't hesitate to reach out"
+- Never give the lead an excuse not to reply — keep friction as low as possible
 - Always sign off with the agent's name`;
 }
 
@@ -151,8 +155,9 @@ ${customInstruction ? `Additional instruction: ${customInstruction}` : getDefaul
 
 Requirements:
 - Under 300 characters
-- Conversational tone, like a text from a real person
-- One clear call to action (e.g. reply, call, set up a showing)
+- Conversational tone, like a text from a real person — not a template, not marketing copy
+- Must end with a soft question that makes it easy to reply (e.g. "are you free for a quick call this week?" or "does that sound helpful?")
+- Never end with a statement — the final sentence must always be a question
 - End with the agent's first name only
 - Return ONLY the SMS text, no labels or explanation`;
 
@@ -187,9 +192,10 @@ Write a follow-up email from ${agent.fullName} to this lead.
 ${customInstruction ? `Additional instruction: ${customInstruction}` : getDefaultEmailInstruction(promptType, lead)}
 
 Requirements:
-- Subject line: concise, personal, no clickbait
+- Subject line: concise, personal, conversational — not clickbait, not a newsletter headline
 - Body: 3–5 short paragraphs, friendly but professional
-- One clear call to action
+- Exactly ONE call to action — either "reply to this email", "give me a call", or "book a quick call" — pick the most natural one and use it once
+- The final paragraph should close with the CTA as a soft question (e.g. "Would a 10-minute call be helpful?")
 - Sign off with the agent's full name${agent.brokerage ? ` and ${agent.brokerage}` : ''}
 - Return ONLY valid JSON in this exact format, no extra text:
 {
@@ -222,14 +228,14 @@ function getDefaultSMSInstruction(type: PromptType, lead: LeadContext): string {
   switch (type) {
     case 'lead_follow_up':
       return lead.daysSinceLastContact && lead.daysSinceLastContact > 14
-        ? 'Re-engage a lead who has gone quiet. Be casual, not pushy.'
-        : 'Follow up with a new or active lead to keep the conversation going.';
+        ? 'Re-engage a lead who has gone quiet. Keep it casual and low-pressure. End with a question that\'s easy to answer — the goal is to get a reply so the agent can get them on the phone.'
+        : 'Follow up with a new or active lead. The goal is to get a reply that leads to a phone call. End with a soft question like "are you free for a quick call this week?"';
     case 'past_client_outreach':
-      return 'Check in with a past client — keep it warm and personal, no hard sell.';
+      return 'Check in with a past client — keep it warm and personal. End with a question that opens the door to a conversation.';
     case 'inbound_reply_suggestion':
-      return 'Suggest a reply to an inbound message from a lead. Match the tone of the conversation.';
+      return 'Suggest a reply to an inbound message from a lead. Match their tone. Aim to move the conversation toward a phone call.';
     default:
-      return 'Write a friendly follow-up SMS appropriate to the lead\'s current status.';
+      return 'Write a friendly follow-up SMS. End with a soft question that invites a reply — the goal is to get them on the phone.';
   }
 }
 
@@ -237,16 +243,16 @@ function getDefaultEmailInstruction(type: PromptType, lead: LeadContext): string
   switch (type) {
     case 'lead_follow_up':
       return lead.daysSinceLastContact && lead.daysSinceLastContact > 30
-        ? 'Re-engage a lead who has gone cold. Acknowledge the time gap naturally.'
-        : 'Send a warm follow-up to an active lead to move the conversation forward.';
+        ? 'Re-engage a lead who has gone cold. Acknowledge the time gap naturally. End with a single soft CTA — a quick call or reply.'
+        : 'Send a warm follow-up to an active lead. One CTA only: offer a 10-minute call. Close with "Would a quick call be helpful?"';
     case 'market_update':
-      return `Send a market update email relevant to a ${lead.leadType} in ${lead.desiredLocation ?? 'their target area'}.`;
+      return `Share a brief, relevant market insight for a ${lead.leadType} in ${lead.desiredLocation ?? 'their target area'}. Keep it genuinely useful. CTA is a call — "would it be worth a quick chat about what this means for you?"`;
     case 'past_client_outreach':
-      return 'Check in with a past client. Reference their home purchase/sale naturally. Offer value, not a sales pitch.';
+      return 'Check in with a past client. Reference their home naturally. Offer value, not a pitch. End by leaving the door open for a call.';
     case 'listing_description':
-      return 'Write an email introducing a listing that may be a good match for this buyer lead.';
+      return 'Introduce a listing that may be a match for this buyer. One CTA: invite them to call or reply to set up a showing.';
     default:
-      return 'Write a professional follow-up email appropriate to the lead\'s current status and needs.';
+      return 'Write a professional follow-up email. One CTA only — reply, call, or book a quick call. Close with a soft question.';
   }
 }
 

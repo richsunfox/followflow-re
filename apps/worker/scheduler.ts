@@ -324,36 +324,63 @@ async function markSequenceComplete(lead: LeadRow, completedStepNumber?: number)
 }
 
 // ─── Custom instructions per sequence step ────────────────────────────────────
+//
+// GOAL OF EVERY MESSAGE: get the lead to respond so the agent can get them on the phone.
+// The sequence stops the moment the lead replies — so every touch is working toward that moment.
 
 function buildCustomInstruction(
   tag: string,
   lead: LeadRow,
   completedStepCount: number,
 ): string {
+  const location  = lead.desired_location ?? 'their target area';
+  const leadType  = lead.lead_type === 'seller' ? 'selling' : 'buying';
+  const source    = lead.source ?? 'online';
+  const budgetStr = lead.budget_max
+    ? `around $${lead.budget_max.toLocaleString()}`
+    : lead.budget_min
+      ? `starting around $${lead.budget_min.toLocaleString()}`
+      : 'their budget range';
+
   switch (tag) {
+    // ── Touch 1 · Day 0 · SMS ──────────────────────────────────────────────────
+    // Instant, warm, specific to what they were looking at.
     case 'first_touch':
-      return `This is the very first message to ${lead.first_name}. Acknowledge how they found the agent (${lead.source ?? 'online'}) and open a low-pressure door to conversation. Keep it short and friendly.`;
+      return `This is the very first message — sent within minutes of ${lead.first_name} reaching out via ${source}. Be warm and immediate. Reference what they were looking at${lead.desired_location ? ` in ${location}` : ''}${lead.budget_max || lead.budget_min ? ` in ${budgetStr}` : ''}. This is NOT a sales pitch — it's a human saying hello. End with a single soft question: "are you free for a quick call this week?" or equivalent. Keep it under 160 characters if possible.`;
 
+    // ── Touch 2 · Day 1 · Email ────────────────────────────────────────────────
+    // Introduce the agent, offer real value, one CTA: a 10-minute call.
     case 'intro_email':
-      return `First email to ${lead.first_name}. Introduce the agent, establish credibility as a local California expert, and offer a no-pressure next step. Mention their interest in ${lead.desired_location ?? 'real estate'}.`;
+      return `First email to ${lead.first_name}. Three goals: (1) introduce the agent as a real person who knows ${location}, (2) show genuine understanding of what ${lead.first_name} is looking for — ${leadType} in ${location}${lead.budget_max || lead.budget_min ? `, budget ${budgetStr}` : ''}, (3) offer ONE next step: a 10-minute call to see if the agent can help. Close with "Would a 10-minute call be helpful?" — nothing else. No listings, no market stats unless they're conversational. Make it feel like an email from a neighbour who happens to be an agent.`;
 
+    // ── Touch 3 · Day 2 · SMS ──────────────────────────────────────────────────
+    // Different angle, low pressure, easy to respond to.
     case 'second_touch':
-      return `Second SMS — ${lead.first_name} hasn't responded yet. Ask a single, simple yes/no or short-answer question that's easy to reply to. Don't rehash the first message.`;
+      return `Second SMS — ${lead.first_name} hasn't responded yet. Do NOT repeat the first message. Come from a completely different angle: ask something genuinely easy to answer about their ${leadType} situation — their timeline, what's most important to them, or what they've already looked at. One question only. The bar to reply should feel almost too low — like they'd feel weird NOT answering.`;
 
+    // ── Touch 4 · Day 4 · Email ────────────────────────────────────────────────
+    // Market insight relevant to their search area, CTA is a call.
     case 'value_add':
-      return `Send a value-add email. Offer something genuinely useful — a market observation, a question about their search criteria, or a relevant tip for ${lead.lead_type === 'seller' ? 'selling' : 'buying'} in California. No hard ask.`;
+      return `Send a market insight email relevant to a ${leadType} in ${location}. Share ONE genuinely useful observation about the current market in that area — e.g. how inventory is moving, what competition looks like, or a trend that's relevant to their price range. Keep it brief (2–3 paragraphs). Do NOT make up statistics — keep it observational and qualitative. End with a single CTA: "would it be worth a quick call to talk through what this means for you?" Make the insight feel worth reading even if they never call.`;
 
+    // ── Touch 5 · Day 7 · SMS ──────────────────────────────────────────────────
+    // New hook — light urgency based on market movement.
     case 'third_touch':
-      return `Third SMS — try a completely different angle. If previous messages were about their search, ask about their timeline. If about timeline, ask what's holding them back. Keep it conversational.`;
+      return `Third SMS — new hook, different from previous messages. Use light market urgency: "a few homes in ${lead.desired_location ? location : 'your range'} just moved" or similar. Do NOT invent specific listings or prices — keep it observational. The urgency should feel real, not manufactured. End with a question that makes it easy to reply — "worth a quick chat?" or "are you still actively looking?"`;
 
+    // ── Touch 6 · Day 10 · Email ──────────────────────────────────────────────
+    // Social proof or credibility touch, soft call invitation.
     case 'alternate_angle':
-      return `This lead has received ${completedStepCount} messages with no reply. Address a common hesitation for ${lead.lead_type === 'seller' ? 'sellers' : 'buyers'} in California — e.g., timing the market, competing offers, or pricing concerns — without being presumptuous.`;
+      return `This is the 6th touch — ${lead.first_name} has received ${completedStepCount} messages with no reply. Do NOT beg or apply pressure. Instead, build credibility: reference a result the agent has helped achieve for someone in a similar situation (a ${leadType} in ${location}), or speak to a common hesitation ${lead.lead_type === 'seller' ? 'sellers' : 'buyers'} have (e.g. timing, competition, not knowing where to start). Keep it conversational and empathetic. Close with a single, soft call invitation — "whenever the timing is right, I'm one call away." Make it feel like a message worth reading, not a follow-up.`;
 
+    // ── Touch 7 · Day 14 · SMS ────────────────────────────────────────────────
+    // Breakup message — genuine, no guilt, leaves door open.
     case 'breakup':
-      return `Final message. ${lead.first_name} has not responded after ${completedStepCount} attempts over 14 days. Write a genuine, low-pressure breakup message that either invites a reply or closes the loop gracefully. No guilt, no pressure. Leave a good impression.`;
+      return `Final message after ${completedStepCount} attempts over 14 days. This is the breakup text. Write it so it sounds like a real person who genuinely doesn't want to be a nuisance. The spirit of the message: "I don't want to keep reaching out if the timing isn't right — just let me know either way." No guilt, no passive-aggression. Leave a warm impression so they come back when they're ready. End with a simple binary question — "should I follow up in a few months, or would you rather I leave it here?"`;
 
+    // ── Monthly nurture (post-sequence) ───────────────────────────────────────
     default:
-      return `Follow-up #${completedStepCount + 1} for ${lead.first_name}. Stay relevant to their situation.`;
+      return `Monthly nurture touch #${completedStepCount + 1} for ${lead.first_name}. The active sequence is over. This is a low-pressure, low-frequency check-in — like a friend who happens to sell real estate. Offer something genuinely useful or interesting about ${location}. No hard ask. Always leave the door open: "if the timing ever changes, you know where to find me." Keep it brief.`;
   }
 }
 

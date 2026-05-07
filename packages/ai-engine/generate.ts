@@ -1,11 +1,11 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import Groq from 'groq-sdk';
 
-const MODEL = 'gemini-2.0-flash-lite';
+const MODEL = 'llama-3.3-70b-versatile';
 
-const apiKey = process.env.GEMINI_API_KEY;
-if (!apiKey) throw new Error('Missing env var: GEMINI_API_KEY');
+const apiKey = process.env.GROQ_API_KEY;
+if (!apiKey) throw new Error('Missing env var: GROQ_API_KEY');
 
-const genAI = new GoogleGenerativeAI(apiKey);
+const groq = new Groq({ apiKey });
 
 export type PromptType = 'lead_follow_up' | 'email_draft' | 'listing_description';
 
@@ -92,7 +92,7 @@ export async function generateSMS({
   promptType: PromptType;
   customInstruction?: string;
 }): Promise<GenerateResult> {
-  const systemInstruction = `You are writing SMS follow-up messages on behalf of a real estate agent.
+  const systemPrompt = `You are writing SMS follow-up messages on behalf of a real estate agent.
 
 Agent: ${agent.fullName}${agent.brokerage ? ` at ${agent.brokerage}` : ''}
 ${agent.phone ? `Agent phone: ${agent.phone}` : ''}
@@ -114,16 +114,22 @@ Lead info:
 ${buildLeadBlock(lead)}
 ${customInstruction ? `\nAdditional instruction: ${customInstruction}` : ''}`;
 
-  const model = genAI.getGenerativeModel({ model: MODEL, systemInstruction });
-  const result = await model.generateContent(userPrompt);
-  const response = result.response;
-  const body = response.text().trim();
+  const completion = await groq.chat.completions.create({
+    model: MODEL,
+    max_tokens: 256,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user',   content: userPrompt },
+    ],
+  });
+
+  const body = completion.choices[0]?.message?.content?.trim() ?? '';
 
   return {
     body,
-    inputTokens:  response.usageMetadata?.promptTokenCount     ?? 0,
-    outputTokens: response.usageMetadata?.candidatesTokenCount ?? 0,
-    model:        MODEL,
+    inputTokens:  completion.usage?.prompt_tokens     ?? 0,
+    outputTokens: completion.usage?.completion_tokens ?? 0,
+    model:        completion.model,
   };
 }
 
@@ -138,7 +144,7 @@ export async function generateEmail({
   promptType: PromptType;
   customInstruction?: string;
 }): Promise<GenerateResult> {
-  const systemInstruction = `You are writing follow-up emails on behalf of a real estate agent.
+  const systemPrompt = `You are writing follow-up emails on behalf of a real estate agent.
 
 Agent: ${agent.fullName}${agent.brokerage ? ` at ${agent.brokerage}` : ''}
 ${agent.phone ? `Agent phone: ${agent.phone}` : ''}
@@ -161,10 +167,16 @@ Lead info:
 ${buildLeadBlock(lead)}
 ${customInstruction ? `\nAdditional instruction: ${customInstruction}` : ''}`;
 
-  const model = genAI.getGenerativeModel({ model: MODEL, systemInstruction });
-  const result = await model.generateContent(userPrompt);
-  const response = result.response;
-  const raw = response.text().trim();
+  const completion = await groq.chat.completions.create({
+    model: MODEL,
+    max_tokens: 1024,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user',   content: userPrompt },
+    ],
+  });
+
+  const raw = completion.choices[0]?.message?.content?.trim() ?? '';
 
   const separatorIndex = raw.indexOf('---');
   const subject = separatorIndex !== -1 ? raw.slice(0, separatorIndex).trim() : undefined;
@@ -173,8 +185,8 @@ ${customInstruction ? `\nAdditional instruction: ${customInstruction}` : ''}`;
   return {
     body,
     subject,
-    inputTokens:  response.usageMetadata?.promptTokenCount     ?? 0,
-    outputTokens: response.usageMetadata?.candidatesTokenCount ?? 0,
-    model:        MODEL,
+    inputTokens:  completion.usage?.prompt_tokens     ?? 0,
+    outputTokens: completion.usage?.completion_tokens ?? 0,
+    model:        completion.model,
   };
 }

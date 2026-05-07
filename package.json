@@ -17,6 +17,7 @@
   "type": "commonjs",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
+    "@google/generative-ai": "^0.24.0",
     "@sendgrid/mail": "^8.1.6",
     "@supabase/supabase-js": "^2.100.1",
     "csv-parse": "^6.2.1",

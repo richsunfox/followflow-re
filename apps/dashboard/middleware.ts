@@ -16,7 +16,10 @@ export async function middleware(request: NextRequest) {
   }
 
   // Create a response we can mutate (needed to refresh session cookies)
-  let response = NextResponse.next({ request });
+  // Forward pathname as a header so server components can read it via headers()
+  let response = NextResponse.next({
+    request: { headers: new Headers({ ...Object.fromEntries(request.headers), 'x-pathname': pathname }) },
+  });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

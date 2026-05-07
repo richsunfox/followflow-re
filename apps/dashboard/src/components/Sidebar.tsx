@@ -5,8 +5,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
 interface SidebarProps {
-  agentName:  string;
-  agentEmail: string;
+  agentName:        string;
+  agentEmail:       string;
+  unreadInboxCount?: number;
 }
 
 // ─── Navigation items ─────────────────────────────────────────────────────────
@@ -18,6 +19,15 @@ const nav = [
     icon:  (
       <svg className="w-[18px] h-[18px] shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+      </svg>
+    ),
+  },
+  {
+    href:  '/inbox',
+    label: 'Inbox',
+    icon:  (
+      <svg className="w-[18px] h-[18px] shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H6.911a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661Z" />
       </svg>
     ),
   },
@@ -73,7 +83,7 @@ function initials(name: string): string {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function Sidebar({ agentName, agentEmail }: SidebarProps) {
+export default function Sidebar({ agentName, agentEmail, unreadInboxCount = 0 }: SidebarProps) {
   const pathname = usePathname();
   const router   = useRouter();
   const supabase = createClient();
@@ -112,7 +122,8 @@ export default function Sidebar({ agentName, agentEmail }: SidebarProps) {
       {/* ── Navigation ─────────────────────────────────────────────────────── */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto scrollbar-thin">
         {nav.map(item => {
-          const active = pathname.startsWith(item.href);
+          const active        = pathname.startsWith(item.href);
+          const showUnreadDot = item.href === '/inbox' && unreadInboxCount > 0;
           return (
             <Link
               key={item.href}
@@ -125,10 +136,18 @@ export default function Sidebar({ agentName, agentEmail }: SidebarProps) {
                   : 'text-ao-muted hover:text-white hover:bg-white/[0.05] border border-transparent',
               ].join(' ')}
             >
-              <span className={active ? 'text-ao-blue' : ''}>
+              <span className={`relative ${active ? 'text-ao-blue' : ''}`}>
                 {item.icon}
+                {showUnreadDot && (
+                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-red-500 ring-2 ring-ao-navy" />
+                )}
               </span>
               {item.label}
+              {showUnreadDot && (
+                <span className="ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold leading-none">
+                  {unreadInboxCount > 9 ? '9+' : unreadInboxCount}
+                </span>
+              )}
             </Link>
           );
         })}

@@ -13,6 +13,7 @@ import { supabaseAdmin } from '../../packages/database/client';
 import { generateSMS, generateEmail } from '../../packages/ai-engine/generate';
 import type { AgentContext, LeadContext, VoiceProfile } from '../../packages/ai-engine/generate';
 import { sendSMS } from '../../packages/delivery/sms';
+import { sendEmail } from '../../packages/delivery/email';
 import {
   FOLLOW_UP_SEQUENCE,
   getSequenceState,
@@ -37,6 +38,7 @@ interface LeadRow {
   first_name: string;
   last_name: string;
   phone: string | null;
+  email: string | null;
   lead_type: 'buyer' | 'seller' | 'both';
   status: string;
   source: string | null;
@@ -125,7 +127,7 @@ async function fetchDueLeads(): Promise<LeadRow[]> {
   const { data, error } = await supabaseAdmin
     .from('leads')
     .select(`
-      id, agent_id, first_name, last_name, phone, lead_type, status,
+      id, agent_id, first_name, last_name, phone, email, lead_type, status,
       source, budget_min, budget_max, desired_location, desired_bedrooms,
       notes, last_contacted_at, next_follow_up_at, created_at,
       sequence_day, sequence_paused, sequence_completed,
@@ -257,6 +259,29 @@ async function processLead(lead: LeadRow): Promise<ProcessResult> {
         const sendResult = await sendSMS(lead.phone, messageBody, twilio_phone_number, inserted.id);
         const statusUpdate = sendResult.status === 'sent'
           ? { status: 'sent', provider_message_id: sendResult.twilioSid ?? null, sent_at: new Date().toISOString(), error_message: null }
+          : { status: 'failed', error_message: sendResult.error ?? 'Unknown error' };
+        await supabaseAdmin.from('messages').update(statusUpdate).eq('id', inserted.id);
+      }
+    }
+
+    // ── Send email via SendGrid ───────────────────────────────────────────────
+    if (step.channel === 'email' && inserted) {
+      if (!lead.email) {
+        log('warn', `Lead ${leadName} has no email address — message saved as pending but not sent`);
+        await supabaseAdmin
+          .from('messages')
+          .update({ status: 'failed', error_message: 'Lead has no email address' })
+          .eq('id', inserted.id);
+      } else {
+        const sendResult = await sendEmail(
+          lead.email,
+          messageSubject ?? `Following up — ${agent.full_name}`,
+          messageBody,
+          agent.full_name,
+          inserted.id,
+        );
+        const statusUpdate = sendResult.status === 'sent'
+          ? { status: 'sent', provider_message_id: sendResult.sendgridMessageId ?? null, sent_at: new Date().toISOString(), error_message: null }
           : { status: 'failed', error_message: sendResult.error ?? 'Unknown error' };
         await supabaseAdmin.from('messages').update(statusUpdate).eq('id', inserted.id);
       }

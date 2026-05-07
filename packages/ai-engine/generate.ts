@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const MODEL = 'models/gemini-1.5-flash';
+const MODEL = 'gemini-2.0-flash-lite';
 
 const apiKey = process.env.GEMINI_API_KEY;
 if (!apiKey) throw new Error('Missing env var: GEMINI_API_KEY');

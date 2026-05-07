@@ -163,14 +163,22 @@ function StatCard({
   label: string; value: number; accent: string; urgent?: boolean;
 }) {
   return (
-    <div className="bg-white border border-[#E2E8F0] rounded-xl px-4 py-4 shadow-sm">
+    <div
+      className="relative bg-white border border-[#E2E8F0] rounded-xl px-4 py-4 shadow-sm overflow-hidden"
+      style={{ borderTop: `2px solid ${accent}` }}
+    >
+      {/* Subtle tinted gradient wash */}
       <div
-        className="text-2xl font-bold tabular-nums leading-none"
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: `linear-gradient(135deg, ${accent}09 0%, transparent 55%)` }}
+      />
+      <div
+        className="relative text-2xl font-bold tabular-nums leading-none"
         style={{ color: accent }}
       >
         {value}
       </div>
-      <div className="text-xs text-slate-500 font-medium mt-1.5">{label}</div>
+      <div className="relative text-xs text-slate-500 font-medium mt-1.5">{label}</div>
     </div>
   );
 }

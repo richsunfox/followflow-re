@@ -120,38 +120,42 @@ export default function Sidebar({ agentName, agentEmail, unreadInboxCount = 0 }:
       </div>
 
       {/* ── Navigation ─────────────────────────────────────────────────────── */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto scrollbar-thin">
-        {nav.map(item => {
-          const active        = pathname.startsWith(item.href);
-          const showUnreadDot = item.href === '/inbox' && unreadInboxCount > 0;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={[
-                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium',
-                'transition-all duration-150',
-                active
-                  ? 'bg-ao-blue/15 text-white border border-ao-blue/25'
-                  : 'text-ao-muted hover:text-white hover:bg-white/[0.05] border border-transparent',
-              ].join(' ')}
-            >
-              <span className={`relative ${active ? 'text-ao-blue' : ''}`}>
-                {item.icon}
-                {showUnreadDot && (
-                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-red-500 ring-2 ring-ao-navy" />
-                )}
-              </span>
-              {item.label}
-              {showUnreadDot && (
-                <span className="ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold leading-none">
-                  {unreadInboxCount > 9 ? '9+' : unreadInboxCount}
+      <div className="flex-1 relative overflow-hidden">
+        <nav className="h-full px-3 py-4 space-y-0.5 overflow-y-auto scrollbar-thin">
+          {nav.map(item => {
+            const active        = pathname.startsWith(item.href);
+            const showUnreadDot = item.href === '/inbox' && unreadInboxCount > 0;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={[
+                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium',
+                  'transition-all duration-150',
+                  active
+                    ? 'bg-ao-blue/10 text-white border border-ao-blue/15 border-l-[3px] border-l-ao-blue'
+                    : 'text-ao-muted hover:text-white hover:bg-white/[0.05] border border-transparent',
+                ].join(' ')}
+              >
+                <span className={`relative ${active ? 'text-ao-blue' : ''}`}>
+                  {item.icon}
+                  {showUnreadDot && (
+                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-red-500 ring-2 ring-ao-navy" />
+                  )}
                 </span>
-              )}
-            </Link>
-          );
-        })}
-      </nav>
+                {item.label}
+                {showUnreadDot && (
+                  <span className="ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold leading-none">
+                    {unreadInboxCount > 9 ? '9+' : unreadInboxCount}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+        {/* Depth fade at the bottom of the nav list */}
+        <div className="pointer-events-none absolute bottom-0 inset-x-0 h-8 bg-gradient-to-t from-ao-navy to-transparent" />
+      </div>
 
       {/* ── Agent profile ──────────────────────────────────────────────────── */}
       <div className="px-3 pb-4 pt-3 border-t border-ao-border space-y-0.5">

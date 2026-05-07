@@ -37,11 +37,6 @@
     min-font-size: 14px;
   }
 
-  /* Minimum 14px on all text nodes */
-  *, *::before, *::after {
-    font-size: max(14px, inherit);
-  }
-
   /* Headings default to font-weight 700 */
   h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
@@ -58,6 +53,13 @@
   /* Standard card padding (24px) */
   .card-pad { @apply p-6; }
 
+  /* Glass morphism surface */
+  .glass {
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
   /* Thin scrollbar for dark surfaces */
   .scrollbar-thin {
     scrollbar-width: thin;
@@ -69,6 +71,18 @@
 }
 
 /* ── Animations ────────────────────────────────────────────────────────────── */
+
+/* Skeleton loading shimmer */
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position:  200% 0; }
+}
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+}
+
 
 /* Slide in from right (drawer / detail modal) */
 @keyframes fadeSlide {

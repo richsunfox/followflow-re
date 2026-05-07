@@ -27,6 +27,11 @@ const config: Config = {
           blue:    '#3B7BFF',   // primary CTA, active states
           'blue-hover': '#2E6AEE',
           gold:    '#C9A84C',   // premium / guarantee badges only
+          // Elevated surfaces
+          'surface-2': '#212D47',
+          'surface-3': '#263354',
+          // Tinted fills
+          'blue-dim':  'rgba(59,123,255,0.12)',
           // Text
           muted:   '#8B9BB4',   // secondary labels, metadata
         },
@@ -50,11 +55,15 @@ const config: Config = {
         'backdrop-in': 'backdrop-in 150ms ease-out both',
         'slide-up':    'slide-up 200ms ease-out both',
       },
+      fontSize: {
+        'xxs': ['11px', '16px'],
+      },
       boxShadow: {
-        'card':   '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)',
-        'card-hover': '0 4px 12px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.12)',
-        'blue':   '0 0 24px rgba(59,123,255,0.30)',
-        'blue-lg': '0 0 48px rgba(59,123,255,0.35)',
+        'card':      '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)',
+        'card-hover':'0 4px 12px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.12)',
+        'blue':      '0 0 24px rgba(59,123,255,0.30)',
+        'blue-lg':   '0 0 48px rgba(59,123,255,0.35)',
+        'glow-blue': '0 0 0 1px rgba(59,123,255,0.3), 0 0 24px rgba(59,123,255,0.15)',
       },
     },
   },
